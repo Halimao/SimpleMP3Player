@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MP3播放器</title>
+    <!-- 网站图标 -->
     <link rel="icon" href="https://p6-flow-sign.byteimg.com/tos-cn-i-ik7evvg4ik/rc/pc/super_tool/149d45fff4354aebab6dccc0e1ecfc9b.svg?rcl=202511261909332EC2BCC6C580A4EF7174&rk3s=8e244e95&rrcfp=f512b60b&x-expires=1765451404&x-signature=DtYxX9%2FyZZqkOe00xjXsCvS6eTk%3D" type="image/svg+xml">
     <link rel="icon" href="https://p6-flow-sign.byteimg.com/tos-cn-i-ik7evvg4ik/rc/pc/super_tool/149d45fff4354aebab6dccc0e1ecfc9b.svg?rcl=202511261909332EC2BCC6C580A4EF7174&rk3s=8e244e95&rrcfp=f512b60b&x-expires=1765451404&x-signature=DtYxX9%2FyZZqkOe00xjXsCvS6eTk%3D" type="image/png" sizes="32x32">
     <link rel="apple-touch-icon" href="https://p6-flow-sign.byteimg.com/tos-cn-i-ik7evvg4ik/rc/pc/super_tool/149d45fff4354aebab6dccc0e1ecfc9b.svg?rcl=202511261909332EC2BCC6C580A4EF7174&rk3s=8e244e95&rrcfp=f512b60b&x-expires=1765451404&x-signature=DtYxX9%2FyZZqkOe00xjXsCvS6eTk%3D">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.1/css/v4-shims.min.css">
-
+    
     <script>
         tailwind.config = {
             theme: {
@@ -30,7 +30,7 @@
             }
         }
     </script>
-
+    
     <style type="text/tailwindcss">
         @layer utilities {
             .content-auto {
@@ -52,18 +52,20 @@
                 transform: translateY(-2px);
                 box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             }
-            .speed-button {
+            .control-button {
                 transition: all 0.2s ease;
+                touch-action: manipulation;
             }
-            .speed-button.active {
+            .control-button.active {
                 background-color: #3B82F6;
                 color: white;
                 transform: scale(1.05);
             }
-            .volume-button {
+            .panel-button {
                 transition: all 0.2s ease;
+                touch-action: manipulation;
             }
-            .volume-button.active {
+            .panel-button.active {
                 background-color: #3B82F6;
                 color: white;
                 transform: scale(1.05);
@@ -93,10 +95,24 @@
                 transform: scale(1.2);
                 box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
             }
+            /* 自定义滚动条 */
+            .custom-scrollbar::-webkit-scrollbar {
+                width: 4px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 2px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+                background: #c1c1c1;
+                border-radius: 2px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                background: #a1a1a1;
+            }
         }
     </style>
 </head>
-
 <body class="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-md">
         <!-- 播放器主容器 -->
@@ -126,39 +142,44 @@
                 </div>
                 <div class="relative">
                     <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div id="progressBar" class="h-full bg-primary rounded-full transition-all duration-100"
-                            style="width: 0%"></div>
+                        <div id="progressBar" class="h-full bg-primary rounded-full transition-all duration-100" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- 播放控制按钮 -->
-            <div class="px-8 py-6">
-                <div class="flex justify-between items-center">
-                    <div class="flex space-x-4">
-                        <button id="loopBtn" class="button-hover bg-gray-100 rounded-full p-4">
-                            <i class="fa fa-repeat text-gray-600"></i>
-                        </button>
-                        <button id="prevBtn" class="button-hover bg-gray-100 rounded-full p-4">
-                            <i class="fa fa-step-backward text-gray-600"></i>
-                        </button>
-                    </div>
-
-                    <button id="playPauseBtn" class="button-hover bg-primary text-white rounded-full p-6 scale-110">
+            <!-- 主要播放控制按钮 -->
+            <div class="px-6 py-4">
+                <div class="flex justify-center items-center space-x-6">
+                    <button id="loopBtn" class="control-button bg-gray-100 rounded-full p-4">
+                        <i class="fa fa-repeat text-gray-600"></i>
+                    </button>
+                    <button id="prevBtn" class="control-button bg-gray-100 rounded-full p-4">
+                        <i class="fa fa-step-backward text-gray-600"></i>
+                    </button>
+                    <button id="playPauseBtn" class="control-button bg-primary text-white rounded-full p-6 scale-110">
                         <i class="fa fa-play text-xl"></i>
                     </button>
+                    <button id="nextBtn" class="control-button bg-gray-100 rounded-full p-4">
+                        <i class="fa fa-step-forward text-gray-600"></i>
+                    </button>
+                    <button id="moreBtn" class="control-button bg-gray-100 rounded-full p-4">
+                        <i class="fa fa-ellipsis-h text-gray-600"></i>
+                    </button>
+                </div>
+            </div>
 
-                    <div class="flex space-x-4">
-                        <button id="nextBtn" class="button-hover bg-gray-100 rounded-full p-4">
-                            <i class="fa fa-step-forward text-gray-600"></i>
-                        </button>
-                        <button id="volumeBtn" class="button-hover bg-gray-100 rounded-full p-4">
-                            <i class="fa fa-volume-up text-gray-600"></i>
-                        </button>
-                        <button id="speedBtn" class="button-hover bg-gray-100 rounded-full p-4">
-                            <i class="fa fa-tachometer text-gray-600"></i>
-                        </button>
-                    </div>
+            <!-- 更多功能面板 -->
+            <div id="morePanel" class="px-6 py-4 hidden">
+                <h3 class="text-sm font-semibold text-gray-600 mb-3">更多选项</h3>
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <button id="volumeBtn" class="panel-button bg-gray-100 rounded-lg py-3 flex items-center justify-center space-x-2">
+                        <i class="fa fa-volume-up text-gray-600"></i>
+                        <span class="text-sm">音量</span>
+                    </button>
+                    <button id="speedBtn" class="panel-button bg-gray-100 rounded-lg py-3 flex items-center justify-center space-x-2">
+                        <i class="fa fa-tachometer text-gray-600"></i>
+                        <span class="text-sm">速度</span>
+                    </button>
                 </div>
             </div>
 
@@ -166,19 +187,19 @@
             <div id="volumePanel" class="px-6 py-4 hidden">
                 <h3 class="text-sm font-semibold text-gray-600 mb-3">音量控制</h3>
                 <div class="flex items-center space-x-4">
-                    <button id="muteBtn" class="button-hover bg-gray-100 rounded-lg py-2 px-4 text-sm">
+                    <button id="muteBtn" class="panel-button bg-gray-100 rounded-lg py-2 px-4 text-sm">
                         <i class="fa fa-volume-up"></i>
                     </button>
                     <div class="flex-1">
-                        <input type="range" id="volumeSlider" min="0" max="100" value="80"
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer volume-slider">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="80" 
+                               class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer volume-slider">
                     </div>
                     <span id="volumeValue" class="text-sm font-medium">80%</span>
                 </div>
                 <div class="grid grid-cols-3 gap-2 mt-3">
-                    <button class="volume-button bg-gray-100 rounded-lg py-2 text-sm" data-volume="30">低</button>
-                    <button class="volume-button bg-gray-100 rounded-lg py-2 text-sm active" data-volume="80">中</button>
-                    <button class="volume-button bg-gray-100 rounded-lg py-2 text-sm" data-volume="100">高</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-volume="30">低</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm active" data-volume="80">中</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-volume="100">高</button>
                 </div>
             </div>
 
@@ -186,19 +207,19 @@
             <div id="speedPanel" class="px-6 py-4 hidden">
                 <h3 class="text-sm font-semibold text-gray-600 mb-3">播放速度</h3>
                 <div class="grid grid-cols-4 gap-2">
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="0.5">0.5x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="0.75">0.75x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="0.9">0.9x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm active" data-speed="1">1x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="1.1">1.1x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="1.2">1.2x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="1.5">1.5x</button>
-                    <button class="speed-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="2">2x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="0.5">0.5x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="0.75">0.75x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="0.9">0.9x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm active" data-speed="1">1x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="1.1">1.1x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="1.2">1.2x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="1.5">1.5x</button>
+                    <button class="panel-button bg-gray-100 rounded-lg py-2 text-sm" data-speed="2">2x</button>
                 </div>
             </div>
 
             <!-- 播放列表 -->
-            <div id="playlistPanel" class="px-6 py-4 hidden max-h-60 overflow-y-auto">
+            <div id="playlistPanel" class="px-6 py-4 hidden max-h-60 overflow-y-auto custom-scrollbar">
                 <h3 class="text-sm font-semibold text-gray-600 mb-3">播放列表</h3>
                 <div id="playlist" class="space-y-2">
                     <!-- 播放列表项将通过JS动态生成 -->
@@ -235,7 +256,9 @@
         const speedBtn = document.getElementById('speedBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
+        const moreBtn = document.getElementById('moreBtn');
         const toggleListBtn = document.getElementById('toggleListBtn');
+        const morePanel = document.getElementById('morePanel');
         const volumePanel = document.getElementById('volumePanel');
         const speedPanel = document.getElementById('speedPanel');
         const playlistPanel = document.getElementById('playlistPanel');
@@ -273,27 +296,27 @@
         // 播放音频
         function playAudio(index) {
             if (index < 0 || index >= audioFiles.length) return;
-
+            
             currentIndex = index;
             const file = audioFiles[index];
-
+            
             // 更新UI
             currentTitle.textContent = file.title;
             currentArtist.textContent = file.artist;
-
+            
             // 更新播放列表选中状态
             document.querySelectorAll('.list-item').forEach(item => {
                 item.classList.remove('active');
             });
             document.querySelector(`.list-item[data-index="${index}"]`).classList.add('active');
-
+            
             // 设置音频源
             audio.src = file.url;
             audio.playbackRate = currentSpeed;
             audio.loop = isLooping;
             audio.volume = currentVolume;
             audio.muted = isMuted;
-
+            
             // 播放音频
             audio.play().then(() => {
                 isPlaying = true;
@@ -327,7 +350,7 @@
             if (audio.duration) {
                 const progress = (audio.currentTime / audio.duration) * 100;
                 progressBar.style.width = `${progress}%`;
-
+                
                 // 更新时间显示
                 currentTime.textContent = formatTime(audio.currentTime);
                 totalTime.textContent = formatTime(audio.duration);
@@ -345,7 +368,7 @@
         function toggleLoop() {
             isLooping = !isLooping;
             audio.loop = isLooping;
-
+            
             if (isLooping) {
                 loopBtn.classList.add('bg-primary', 'text-white');
                 loopBtn.classList.remove('bg-gray-100', 'text-gray-600');
@@ -355,12 +378,35 @@
             }
         }
 
+        // 切换更多面板
+        function toggleMorePanel() {
+            morePanel.classList.toggle('hidden');
+            // 如果打开更多面板，关闭其他面板
+            if (!morePanel.classList.contains('hidden')) {
+                volumePanel.classList.add('hidden');
+                speedPanel.classList.add('hidden');
+                playlistPanel.classList.add('hidden');
+            }
+        }
+
         // 切换音量面板
         function toggleVolumePanel() {
             volumePanel.classList.toggle('hidden');
-            // 如果打开音量面板，关闭速度面板
+            // 如果打开音量面板，关闭其他面板
             if (!volumePanel.classList.contains('hidden')) {
+                morePanel.classList.add('hidden');
                 speedPanel.classList.add('hidden');
+                playlistPanel.classList.add('hidden');
+            }
+        }
+
+        // 切换速度面板
+        function toggleSpeedPanel() {
+            speedPanel.classList.toggle('hidden');
+            // 如果打开速度面板，关闭其他面板
+            if (!speedPanel.classList.contains('hidden')) {
+                morePanel.classList.add('hidden');
+                volumePanel.classList.add('hidden');
                 playlistPanel.classList.add('hidden');
             }
         }
@@ -369,34 +415,17 @@
         function toggleMute() {
             isMuted = !isMuted;
             audio.muted = isMuted;
-
+            
             const icon = muteBtn.querySelector('i');
-            const volumeIcon = volumeBtn.querySelector('i');
-
+            
             if (isMuted) {
                 icon.className = 'fa fa-volume-off';
-                volumeIcon.className = 'fa fa-volume-off text-gray-600';
                 muteBtn.classList.add('bg-red-100', 'text-red-600');
                 muteBtn.classList.remove('bg-gray-100');
             } else {
-                updateVolumeIcon();
                 icon.className = 'fa fa-volume-up';
                 muteBtn.classList.remove('bg-red-100', 'text-red-600');
                 muteBtn.classList.add('bg-gray-100');
-            }
-        }
-
-        // 更新音量图标
-        function updateVolumeIcon() {
-            const volumeIcon = volumeBtn.querySelector('i');
-            if (isMuted) {
-                volumeIcon.className = 'fa fa-volume-off text-gray-600';
-            } else if (currentVolume === 0) {
-                volumeIcon.className = 'fa fa-volume-off text-gray-600';
-            } else if (currentVolume < 0.5) {
-                volumeIcon.className = 'fa fa-volume-down text-gray-600';
-            } else {
-                volumeIcon.className = 'fa fa-volume-up text-gray-600';
             }
         }
 
@@ -407,21 +436,20 @@
             audio.volume = currentVolume;
             isMuted = false;
             audio.muted = false;
-
+            
             // 更新滑块
             volumeSlider.value = volume;
             volumeValue.textContent = `${volume}%`;
-
+            
             // 更新按钮状态
-            document.querySelectorAll('.volume-button').forEach(btn => {
+            document.querySelectorAll('.panel-button[data-volume]').forEach(btn => {
                 btn.classList.remove('active');
                 if (parseInt(btn.dataset.volume) === volume) {
                     btn.classList.add('active');
                 }
             });
-
+            
             // 更新图标
-            updateVolumeIcon();
             const icon = muteBtn.querySelector('i');
             icon.className = 'fa fa-volume-up';
             muteBtn.classList.remove('bg-red-100', 'text-red-600');
@@ -438,17 +466,14 @@
         function setPlaybackSpeed(speed) {
             currentSpeed = speed;
             audio.playbackRate = speed;
-
+            
             // 更新速度按钮状态
-            document.querySelectorAll('.speed-button').forEach(btn => {
+            document.querySelectorAll('.panel-button[data-speed]').forEach(btn => {
                 btn.classList.remove('active');
                 if (parseFloat(btn.dataset.speed) === speed) {
                     btn.classList.add('active');
                 }
             });
-
-            // 隐藏速度面板
-            speedPanel.classList.add('hidden');
         }
 
         // 从URL参数获取要选择的音频ID
@@ -467,18 +492,18 @@
                 if (audioIndex !== -1) {
                     // 存储要选择的索引，等待用户交互
                     autoSelectIndex = audioIndex;
-
+                    
                     // 更新UI显示选中的音频信息
                     const file = audioFiles[audioIndex];
                     currentTitle.textContent = file.title;
                     currentArtist.textContent = file.artist;
-
+                    
                     // 更新播放列表选中状态
                     document.querySelectorAll('.list-item').forEach(item => {
                         item.classList.remove('active');
                     });
                     document.querySelector(`.list-item[data-index="${audioIndex}"]`).classList.add('active');
-
+                    
                     console.log(`已通过URL参数选择音频: ${file.title}`);
                 } else {
                     console.log(`未找到ID为${autoSelectId}的音频文件`);
@@ -510,16 +535,11 @@
 
         loopBtn.addEventListener('click', toggleLoop);
 
+        moreBtn.addEventListener('click', toggleMorePanel);
+
         volumeBtn.addEventListener('click', toggleVolumePanel);
 
-        speedBtn.addEventListener('click', () => {
-            speedPanel.classList.toggle('hidden');
-            // 如果打开速度面板，关闭音量面板
-            if (!speedPanel.classList.contains('hidden')) {
-                volumePanel.classList.add('hidden');
-                playlistPanel.classList.add('hidden');
-            }
-        });
+        speedBtn.addEventListener('click', toggleSpeedPanel);
 
         prevBtn.addEventListener('click', () => {
             if (currentIndex > 0) {
@@ -541,6 +561,7 @@
             playlistPanel.classList.toggle('hidden');
             // 如果打开播放列表，关闭其他面板
             if (!playlistPanel.classList.contains('hidden')) {
+                morePanel.classList.add('hidden');
                 volumePanel.classList.add('hidden');
                 speedPanel.classList.add('hidden');
             }
@@ -554,14 +575,14 @@
         volumeSlider.addEventListener('change', adjustVolumeSlider);
 
         // 音量预设按钮点击事件
-        document.querySelectorAll('.volume-button').forEach(btn => {
+        document.querySelectorAll('.panel-button[data-volume]').forEach(btn => {
             btn.addEventListener('click', () => {
                 setVolume(parseInt(btn.dataset.volume));
             });
         });
 
         // 速度按钮点击事件
-        document.querySelectorAll('.speed-button').forEach(btn => {
+        document.querySelectorAll('.panel-button[data-speed]').forEach(btn => {
             btn.addEventListener('click', () => {
                 setPlaybackSpeed(parseFloat(btn.dataset.speed));
             });
@@ -598,12 +619,14 @@
         initPlaylist();
         setPlaybackSpeed(1); // 默认1倍速
         setVolume(80); // 默认80%音量
-
+        
         // 检查是否需要自动选择音频
         document.addEventListener('DOMContentLoaded', () => {
             autoSelectAudio();
         });
+
+        // 触摸优化 - 防止点击延迟
+        document.addEventListener('touchstart', function() {}, {passive: true});
     </script>
 </body>
-
 </html>
